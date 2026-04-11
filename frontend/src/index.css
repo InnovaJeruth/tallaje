@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { font-family: 'DM Sans', sans-serif; }
+  body {
+    @apply bg-surface text-slate-100 antialiased;
+    background-image: 
+      radial-gradient(ellipse 80% 50% at 50% -20%, rgba(14,165,233,0.08), transparent);
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-surface-card border border-surface-border rounded-2xl;
+  }
+
+  .input-field {
+    @apply w-full bg-surface border border-surface-border rounded-xl px-4 py-3
+           text-slate-100 placeholder-surface-muted
+           focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent
+           font-mono text-sm transition-all;
+  }
+
+  .btn-primary {
+    /* Corregido: font-semibold en lugar de font-600 */
+    @apply bg-brand-600 hover:bg-brand-500 text-white font-display font-semibold
+           px-6 py-3 rounded-xl transition-all active:scale-95
+           disabled:opacity-40 disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply bg-surface-card hover:bg-surface-border text-slate-200 font-display
+           px-5 py-2.5 rounded-xl border border-surface-border transition-all active:scale-95;
+  }
+
+  .label {
+    /* Corregido: font-semibold en lugar de font-600 */
+    @apply text-xs font-display font-semibold text-slate-400 uppercase tracking-widest mb-1.5 block;
+  }
+
+  .talla-badge {
+    /* Corregido: font-medium en lugar de font-500 */
+    @apply font-mono font-medium text-sm px-3 py-1 rounded-lg;
+  }
+
+  .talla-normal { 
+    @apply bg-brand-900/30 text-brand-200 border border-brand-700; 
+  }
+
+  .talla-especial { 
+    @apply bg-red-950/30 text-red-300 border border-red-800; 
+  }
+}
