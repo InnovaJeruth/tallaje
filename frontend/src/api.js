@@ -1,23 +1,42 @@
-const BASE = '/api'
+// Configuración dinámica de la URL Base
+// Si detecta que el navegador está en localhost, apunta al puerto 8000 local.
+// Si no, usa la URL de Render.
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'http://localhost:8000'
+  : 'https://api-tallaje.onrender.com';
+
+const BASE = `${API_BASE_URL}/api`;
 
 async function req(method, path, body) {
   const opts = {
     method,
     headers: {},
-  }
+  };
+
   if (body !== undefined && method !== 'GET' && method !== 'HEAD') {
-    opts.headers['Content-Type'] = 'application/json'
-    opts.body = JSON.stringify(body)
+    opts.headers['Content-Type'] = 'application/json';
+    opts.body = JSON.stringify(body);
   }
-  const res = await fetch(BASE + path, opts)
-  if (res.status === 204) return null
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ detail: res.statusText }))
-    const d = err.detail
-    const msg = Array.isArray(d) ? d.map(x => x.msg ?? JSON.stringify(x)).join(', ') : (d || 'Error desconocido')
-    throw new Error(typeof msg === 'string' ? msg : 'Error desconocido')
+
+  try {
+    const res = await fetch(BASE + path, opts);
+
+    if (res.status === 204) return null;
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ detail: res.statusText }));
+      const d = err.detail;
+      const msg = Array.isArray(d) 
+        ? d.map(x => x.msg ?? JSON.stringify(x)).join(', ') 
+        : (d || 'Error desconocido');
+      throw new Error(typeof msg === 'string' ? msg : 'Error desconocido');
+    }
+
+    return res.json();
+  } catch (error) {
+    console.error("Error en la petición API:", error);
+    throw error;
   }
-  return res.json()
 }
 
 export const api = {
@@ -44,4 +63,4 @@ export const api = {
   // Configuracion
   listarConfig: () => req('GET', '/configuracion/'),
   actualizarConfig: (clave, valor) => req('PUT', `/configuracion/${clave}`, { valor }),
-}
+};
