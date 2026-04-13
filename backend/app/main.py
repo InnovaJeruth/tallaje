@@ -4,10 +4,16 @@ from app.routers import personas, mediciones, rangos, reporte, configuracion
 
 app = FastAPI(title="Sistema de Tallaje SAMITEX", version="1.0.0")
 
+# Define los orígenes permitidos explícitamente
+origins = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://tallaje.vercel.app", # Tu URL de Vercel (sin la barra / al final)
+]
+
 app.add_middleware(
     CORSMiddleware,
-    #allow_origins=["http://localhost:5173", "http://localhost:3000"],
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
