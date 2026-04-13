@@ -5,10 +5,12 @@ from app.routers import personas, mediciones, rangos, reporte, configuracion
 app = FastAPI(title="Sistema de Tallaje SAMITEX", version="1.0.0")
 
 # Define los orígenes permitidos explícitamente
+# Actualiza tu lista de esta forma para cubrir todas las bases
 origins = [
     "http://localhost:5173",
     "http://localhost:3000",
-    "https://tallaje.vercel.app", # Tu URL de Vercel (sin la barra / al final)
+    "https://tallaje.vercel.app",
+    "https://tallaje-samitex.vercel.app", # Agrega esta por si acaso
 ]
 
 app.add_middleware(
@@ -17,6 +19,7 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["*"], # Esto ayuda a que el navegador vea todo
 )
 
 app.include_router(personas.router,       prefix="/api/personas",       tags=["Personas"])
