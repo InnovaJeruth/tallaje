@@ -20,27 +20,25 @@ def reporte_tallas():
             # ── Normales ───────────────────────────────────────────────────
             if prenda_cod == "SACO":
                 cur.execute("""
-                    SELECT m.talla_saco AS talla, COUNT(*) AS cantidad
+                    SELECT m.talla_saco AS talla, t.etiqueta, COUNT(*) AS cantidad
                     FROM mediciones m
+                    JOIN tallas t ON t.numero = m.talla_saco
+                    JOIN prendas p ON p.id = t.prenda_id
                     WHERE m.talla_saco IS NOT NULL AND m.saco_especial = FALSE
-                    GROUP BY m.talla_saco
-                    ORDER BY MIN(
-                        (SELECT t.orden_num FROM tallas t
-                         JOIN prendas p ON p.id = t.prenda_id
-                         WHERE p.codigo = 'SACO' AND t.numero = m.talla_saco)
-                    )
+                    AND p.codigo = 'SACO'
+                    GROUP BY m.talla_saco, t.etiqueta
+                    ORDER BY MIN(t.orden_num)                    
                 """)
             else:
                 cur.execute("""
-                    SELECT m.talla_pantalon AS talla, COUNT(*) AS cantidad
+                    SELECT m.talla_pantalon AS talla, t.etiqueta, COUNT(*) AS cantidad
                     FROM mediciones m
+                    JOIN tallas t ON t.numero = m.talla_pantalon
+                    JOIN prendas p ON p.id = t.prenda_id
                     WHERE m.talla_pantalon IS NOT NULL AND m.pantalon_especial = FALSE
-                    GROUP BY m.talla_pantalon
-                    ORDER BY MIN(
-                        (SELECT t.orden_num FROM tallas t
-                         JOIN prendas p ON p.id = t.prenda_id
-                         WHERE p.codigo = 'PANTALON' AND t.numero = m.talla_pantalon)
-                    )
+                    AND p.codigo = 'PANTALON'
+                    GROUP BY m.talla_pantalon, t.etiqueta
+                    ORDER BY MIN(t.orden_num)                    
                 """)
             tallas_normales = cur.fetchall()
 
@@ -81,6 +79,7 @@ def reporte_tallas():
 
                 tallas_con_largos.append({
                     "talla":        talla,
+                    "etiqueta":     fila["etiqueta"],
                     "cantidad":     cant,
                     "largo_std":    largo_std,
                     "grupos_largo": grupos_largo,

@@ -11,6 +11,7 @@ origins = [
     "http://localhost:3000",
     "https://tallaje.vercel.app",
     "https://tallaje-samitex.vercel.app", # Agrega esta por si acaso
+    "https://unstriped-uncongenially-terrence.ngrok-free.dev",
 ]
 
 app.add_middleware(

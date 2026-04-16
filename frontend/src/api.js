@@ -1,7 +1,7 @@
 // Configuración dinámica de la URL Base
 // Si detecta que el navegador está en localhost, apunta al puerto 8000 local.
 // Si no, usa la URL de Render.
-const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+const API_BASE_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.hostname === 'unstriped-uncongenially-terrence.ngrok-free.dev'
   ? 'http://localhost:8000'
   : 'https://api-tallaje.onrender.com';
 

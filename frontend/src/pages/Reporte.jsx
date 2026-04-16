@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react'
 import { api } from '../api'
 
 export default function Reporte() {
-  const [data, setData]       = useState(null)
+  const [data, setData] = useState(null)
   const [resumen, setResumen] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [error, setError]     = useState(null)
-  const [tab, setTab]         = useState('SACO')
+  const [error, setError] = useState(null)
+  const [tab, setTab] = useState('SACO')
 
   useEffect(() => {
     Promise.all([api.reporteTallas(), api.resumen()])
@@ -16,8 +16,8 @@ export default function Reporte() {
   }, [])
 
   if (loading) return <p className="text-slate-400 text-sm">Cargando reporte…</p>
-  if (error)   return <p className="text-red-400 text-sm">{error}</p>
-  if (!data)   return null
+  if (error) return <p className="text-red-400 text-sm">{error}</p>
+  if (!data) return null
 
   const prenda = data[tab]
 
@@ -36,7 +36,7 @@ export default function Reporte() {
       {resumen && (
         <div className="grid grid-cols-3 gap-3">
           {[
-            { label: 'Personas',   value: resumen.total_personas },
+            { label: 'Personas', value: resumen.total_personas },
             { label: 'Mediciones', value: resumen.total_mediciones },
             { label: 'Especiales', value: resumen.total_especiales, red: true },
           ].map(c => (
@@ -75,44 +75,58 @@ export default function Reporte() {
         {prenda.tallas.length === 0 ? (
           <p className="text-slate-500 text-sm">Sin datos aún</p>
         ) : (
-          <div className="card overflow-hidden">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-surface-border text-left">
-                  <th className="px-4 py-3 font-display font-600 text-slate-400 text-xs uppercase">Talla</th>
-                  <th className="px-4 py-3 font-display font-600 text-slate-400 text-xs uppercase">Personas</th>
-                  <th className="px-4 py-3 font-display font-600 text-slate-400 text-xs uppercase">
-                    {tab === 'SACO' ? 'L. manga std' : 'L. pantalón std'}
-                  </th>
-                  <th className="px-4 py-3 font-display font-600 text-slate-400 text-xs uppercase">Sub-grupos largo</th>
-                </tr>
-              </thead>
-              <tbody>
-                {prenda.tallas.map((t, i) => (
-                  <tr
-                    key={t.talla}
-                    className={`border-b border-surface-border/50 ${i % 2 === 0 ? '' : 'bg-white/[0.02]'}`}
-                  >
-                    <td className="px-4 py-3">
-                      <span className="talla-badge talla-normal">{t.talla}</span>
-                    </td>
-                    <td className="px-4 py-3 font-mono text-slate-200">{t.cantidad}</td>
-                    <td className="px-4 py-3 font-mono text-slate-400">
-                      {t.largo_std != null ? `${t.largo_std} cm` : '—'}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex flex-wrap gap-1">
-                        {t.grupos_largo.map((g, j) => (
-                          <span key={j} className="font-mono text-xs bg-surface px-2 py-0.5 rounded text-slate-300">
-                            {g.centro} cm <span className="text-slate-500">×{g.cantidad}</span>
-                          </span>
-                        ))}
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="space-y-3">
+            {Object.entries(
+              prenda.tallas.reduce((acc, t) => {
+                const key = t.etiqueta || t.talla
+                if (!acc[key]) acc[key] = []
+                acc[key].push(t)
+                return acc
+              }, {})
+            ).map(([etiqueta, tallas]) => (
+              <div key={etiqueta} className="card overflow-hidden">
+                <div className="px-4 py-2 border-b border-surface-border bg-white/[0.03] flex items-center gap-2">
+                  <span className="font-display font-700 text-brand-400 text-sm">{etiqueta}</span>
+                  <span className="text-xs text-slate-500">
+                    {tallas.reduce((s, t) => s + t.cantidad, 0)} personas
+                  </span>
+                </div>
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-surface-border text-left">
+                      <th className="px-4 py-2 font-display font-600 text-slate-400 text-xs uppercase">Talla</th>
+                      <th className="px-4 py-2 font-display font-600 text-slate-400 text-xs uppercase">Personas</th>
+                      <th className="px-4 py-2 font-display font-600 text-slate-400 text-xs uppercase">
+                        {tab === 'SACO' ? 'L. manga std' : 'L. pantalón std'}
+                      </th>
+                      <th className="px-4 py-2 font-display font-600 text-slate-400 text-xs uppercase">Sub-grupos largo</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {tallas.map((t, i) => (
+                      <tr key={t.talla} className={`border-b border-surface-border/50 ${i % 2 === 0 ? '' : 'bg-white/[0.02]'}`}>
+                        <td className="px-4 py-2">
+                          <span className="talla-badge talla-normal">{t.talla}</span>
+                        </td>
+                        <td className="px-4 py-2 font-mono text-slate-200">{t.cantidad}</td>
+                        <td className="px-4 py-2 font-mono text-slate-400">
+                          {t.largo_std != null ? `${t.largo_std} cm` : '—'}
+                        </td>
+                        <td className="px-4 py-2">
+                          <div className="flex flex-wrap gap-1">
+                            {t.grupos_largo.map((g, j) => (
+                              <span key={j} className="font-mono text-xs bg-surface px-2 py-0.5 rounded text-slate-300">
+                                {g.centro} cm <span className="text-slate-500">×{g.cantidad}</span>
+                              </span>
+                            ))}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ))}
           </div>
         )}
       </section>
